@@ -1,4 +1,19 @@
 /**
+ * Supabase Config for Realtime Multi-Screen Sync
+ */
+const SUPABASE_URL = 'https://kthczpxrewbxezucbvax.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0aGN6cHhyZXdieGV6dWNidmF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMzc4ODksImV4cCI6MjEwMzgxMzg4OX0.WnmyazG0ZpmT5bA_kDKTuu4M5dFttvf9y6IFwhAqm6Q';
+
+let supabaseClient = null;
+if (window.supabase) {
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (err) {
+    console.warn('Supabase initialization warning:', err);
+  }
+}
+
+/**
  * Main Application Logic supporting Dual Interfaces:
  * 1. Stage LED View (Production View - Pure Clean Luxury)
  * 2. Backstage Admin Panel (Presentation Setup & Pool Management)
@@ -98,10 +113,36 @@ class PageantStageController {
   init() {
     this.loadState();
     this.bindEvents();
+    this.initRealtimeSync();
     this.updateStats();
     this.renderAdminTable();
     this.renderAdminHistory();
     lucide.createIcons();
+  }
+
+  initRealtimeSync() {
+    if (!supabaseClient) return;
+
+    this.channel = supabaseClient.channel('stage-spin-room');
+    this.channel
+      .on('broadcast', { event: 'spin_trigger' }, (payload) => {
+        if (!this.isSpinning) {
+          const { winner, duration } = payload.payload;
+          if (duration) this.spinDurationSec = duration;
+          this.executeSpinAnimation(winner, false);
+        }
+      })
+      .on('broadcast', { event: 'pool_update' }, (payload) => {
+        if (payload.payload && Array.isArray(payload.payload.items)) {
+          this.items = payload.payload.items;
+          this.saveItems();
+          this.renderAdminTable();
+          this.updateStats();
+        }
+      })
+      .subscribe((status) => {
+        console.log('Supabase Realtime Status:', status);
+      });
   }
 
   loadState() {
