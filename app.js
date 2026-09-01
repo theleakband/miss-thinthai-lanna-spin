@@ -111,9 +111,9 @@ class PageantStageController {
   }
 
   init() {
-    this.loadState();
     this.bindEvents();
     this.initRealtimeSync();
+    this.loadState();
     this.updateStats();
     this.renderAdminTable();
     this.renderAdminHistory();
@@ -123,6 +123,7 @@ class PageantStageController {
   initRealtimeSync() {
     if (!supabaseClient) return;
 
+    // Realtime Broadcast channel for remote spin trigger
     this.channel = supabaseClient.channel('stage-spin-room');
     this.channel
       .on('broadcast', { event: 'spin_trigger' }, (payload) => {
@@ -132,32 +133,25 @@ class PageantStageController {
           this.executeSpinAnimation(winner, false);
         }
       })
-      .on('broadcast', { event: 'pool_update' }, (payload) => {
-        if (payload.payload && Array.isArray(payload.payload.items)) {
-          this.items = payload.payload.items;
-          this.saveItems();
-          this.renderAdminTable();
-          this.updateStats();
-        }
-      })
       .subscribe((status) => {
-        console.log('Supabase Realtime Status:', status);
+        console.log('Supabase Realtime Channel Status:', status);
       });
+
+    // Realtime Database Postgres Changes listener
+    supabaseClient
+      .channel('db-questions-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'questions' },
+        (payload) => {
+          console.log('Database Change Detected:', payload);
+          this.fetchFromSupabase();
+        }
+      )
+      .subscribe();
   }
 
-  loadState() {
-    const savedItems = localStorage.getItem('thin_thai_items_v2');
-    if (savedItems) {
-      try {
-        this.items = JSON.parse(savedItems);
-      } catch (e) {
-        this.items = [...PRESETS.pageant_keyword, ...PRESETS.pageant_final];
-      }
-    } else {
-      this.items = [...PRESETS.pageant_keyword, ...PRESETS.pageant_final];
-      this.saveItems();
-    }
-
+  async loadState() {
     const savedNoRepeat = localStorage.getItem('thin_thai_no_repeat');
     if (savedNoRepeat !== null) {
       this.isNoRepeat = savedNoRepeat === 'true';
@@ -171,10 +165,79 @@ class PageantStageController {
       this.spinDurationSlider.value = this.spinDurationSec;
       this.durationValDisplay.innerText = `${this.spinDurationSec.toFixed(1)}s`;
     }
+
+    await this.fetchFromSupabase();
   }
 
-  saveItems() {
+  async fetchFromSupabase() {
+    if (supabaseClient) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('questions')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          this.items = data;
+          this.updateStats();
+          this.renderAdminTable();
+          return;
+        }
+      } catch (e) {
+        console.error('Error fetching from Supabase:', e);
+      }
+    }
+
+    // Fallback to local
+    const savedItems = localStorage.getItem('thin_thai_items_v2');
+    if (savedItems) {
+      try {
+        this.items = JSON.parse(savedItems);
+      } catch (e) {
+        this.items = [...PRESETS.thai_culture, ...PRESETS.pageant_keyword];
+      }
+    } else {
+      this.items = [...PRESETS.thai_culture, ...PRESETS.pageant_keyword];
+    }
+    this.updateStats();
+    this.renderAdminTable();
+  }
+
+  async saveItems() {
     localStorage.setItem('thin_thai_items_v2', JSON.stringify(this.items));
+  }
+
+  async updateItemStatusInSupabase(id, used) {
+    if (supabaseClient) {
+      try {
+        await supabaseClient
+          .from('questions')
+          .update({ used: used, updated_at: new Date() })
+          .eq('id', id);
+      } catch (e) {
+        console.error('Supabase update error:', e);
+      }
+    }
+  }
+
+  async insertItemToSupabase(item) {
+    if (supabaseClient) {
+      try {
+        await supabaseClient.from('questions').upsert(item);
+      } catch (e) {
+        console.error('Supabase insert error:', e);
+      }
+    }
+  }
+
+  async deleteItemFromSupabase(id) {
+    if (supabaseClient) {
+      try {
+        await supabaseClient.from('questions').delete().eq('id', id);
+      } catch (e) {
+        console.error('Supabase delete error:', e);
+      }
+    }
   }
 
   saveSettings() {
@@ -267,12 +330,20 @@ class PageantStageController {
     });
 
     // Reset Pool
-    const resetHandler = () => {
+    const resetHandler = async () => {
       if (confirm('คุณต้องการรีเซ็ตคำถามที่ใช้ไปแล้วทั้งหมดให้กลับมาสุ่มใหม่หรือไม่?')) {
         this.items.forEach(i => i.used = false);
         this.saveItems();
         this.updateStats();
         this.renderAdminTable();
+
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('questions').update({ used: false }).neq('id', '');
+          } catch (e) {
+            console.error('Error resetting Supabase questions:', e);
+          }
+        }
         alert('รีเซ็ตคำถามทั้งหมดพร้อมสุ่มแล้ว');
       }
     };
@@ -280,7 +351,7 @@ class PageantStageController {
 
     // Presets
     document.querySelectorAll('.preset-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         const pKey = e.currentTarget.dataset.preset;
         if (PRESETS[pKey]) {
           if (confirm(`ต้องการเพิ่มชุดคำถาม "${e.currentTarget.innerText.trim()}" เข้าสู่ระบบหรือไม่?`)) {
@@ -293,13 +364,21 @@ class PageantStageController {
             this.saveItems();
             this.renderAdminTable();
             this.updateStats();
+
+            if (supabaseClient) {
+              try {
+                await supabaseClient.from('questions').upsert(added);
+              } catch (err) {
+                console.error('Error adding presets to Supabase:', err);
+              }
+            }
           }
         }
       });
     });
 
     // Add Custom Item
-    this.btnAdminAddItem.addEventListener('click', () => {
+    this.btnAdminAddItem.addEventListener('click', async () => {
       const title = this.adminNewTitle.value.trim();
       const cat = this.adminNewCategory.value.trim() || 'คำถามเวที';
       const desc = this.adminNewDesc.value.trim();
@@ -309,28 +388,39 @@ class PageantStageController {
         return;
       }
 
-      this.items.push({
+      const newItem = {
         id: 'c_' + Date.now(),
         title: title,
         category: cat,
         desc: desc,
         used: false
-      });
+      };
 
+      this.items.push(newItem);
       this.saveItems();
       this.adminNewTitle.value = '';
       this.adminNewDesc.value = '';
       this.renderAdminTable();
       this.updateStats();
+
+      await this.insertItemToSupabase(newItem);
     });
 
     // Clear All
-    this.btnAdminClearAll.addEventListener('click', () => {
+    this.btnAdminClearAll.addEventListener('click', async () => {
       if (confirm('คำเตือน: คุณต้องการลบคำถามทั้งหมดออกจากระบบหรือไม่?')) {
         this.items = [];
         this.saveItems();
         this.renderAdminTable();
         this.updateStats();
+
+        if (supabaseClient) {
+          try {
+            await supabaseClient.from('questions').delete().neq('id', '');
+          } catch (e) {
+            console.error('Error clearing Supabase table:', e);
+          }
+        }
       }
     });
 
@@ -346,11 +436,11 @@ class PageantStageController {
     });
 
     // Import JSON
-    this.adminImportFile.addEventListener('change', (e) => {
+    this.adminImportFile.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         try {
           const imported = JSON.parse(event.target.result);
           if (Array.isArray(imported)) {
@@ -358,6 +448,14 @@ class PageantStageController {
             this.saveItems();
             this.renderAdminTable();
             this.updateStats();
+
+            if (supabaseClient) {
+              try {
+                await supabaseClient.from('questions').upsert(imported);
+              } catch (err) {
+                console.error('Error importing to Supabase:', err);
+              }
+            }
             alert('นำเข้าไฟล์สำเร็จ!');
           }
         } catch (err) {
@@ -462,11 +560,12 @@ class PageantStageController {
     lucide.createIcons();
   }
 
-  deleteItem(id) {
+  async deleteItem(id) {
     this.items = this.items.filter(i => i.id !== id);
     this.saveItems();
     this.renderAdminTable();
     this.updateStats();
+    await this.deleteItemFromSupabase(id);
   }
 
   renderAdminHistory() {
@@ -485,7 +584,7 @@ class PageantStageController {
   }
 
   /**
-   * Grand Stage Spin Animation with Multi-layer Overlay Deceleration
+   * Grand Stage Spin Animation with Multi-layer Overlay Deceleration & Supabase Broadcast
    */
   startSpin() {
     const pool = this.getAvailablePool();
@@ -500,6 +599,26 @@ class PageantStageController {
       return;
     }
 
+    // Pick target winner
+    const winnerIndex = Math.floor(Math.random() * pool.length);
+    const winner = pool[winnerIndex];
+
+    // Broadcast trigger to other connected screens (Stage LED)
+    if (this.channel) {
+      this.channel.send({
+        type: 'broadcast',
+        event: 'spin_trigger',
+        payload: {
+          winner: winner,
+          duration: this.spinDurationSec
+        }
+      });
+    }
+
+    this.executeSpinAnimation(winner, true);
+  }
+
+  executeSpinAnimation(winner, isInitiator = false) {
     this.isSpinning = true;
     this.btnQuickSpin.disabled = true;
     this.btnSpinText.innerText = 'กำลังสุ่ม...';
@@ -516,10 +635,6 @@ class PageantStageController {
     // Play Sound Riser
     const durationMs = this.spinDurationSec * 1000;
     window.soundEngine.playRiser(this.spinDurationSec);
-
-    // Pick target winner
-    const winnerIndex = Math.floor(Math.random() * pool.length);
-    const winner = pool[winnerIndex];
 
     const allTitles = this.items.map(i => i.title);
     const startTime = performance.now();
@@ -563,7 +678,7 @@ class PageantStageController {
     requestAnimationFrame(animateShuffle);
   }
 
-  finishSpin(winner) {
+  async finishSpin(winner) {
     this.isSpinning = false;
     this.btnQuickSpin.disabled = false;
     this.btnSpinText.innerText = 'สุ่มคำถามต่อไป (SPIN NEXT)';
@@ -573,6 +688,7 @@ class PageantStageController {
       if (target) {
         target.used = true;
         this.saveItems();
+        await this.updateItemStatusInSupabase(winner.id, true);
       }
     }
 
