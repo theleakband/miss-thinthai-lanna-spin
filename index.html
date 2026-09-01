@@ -221,29 +221,8 @@
         </div>
       </div>
 
-      <!-- Right Column: Question Bank & Presets -->
+      <!-- Right Column: Question Bank (Custom Input & Database Table) -->
       <div class="admin-col right-col">
-        <!-- Preset Loader -->
-        <div class="admin-card">
-          <div class="card-header">
-            <h4><i data-lucide="folder-down"></i> ชุดคำถามสำเร็จรูป (Presets)</h4>
-          </div>
-          <div class="preset-badges">
-            <button class="preset-btn" data-preset="pageant_final">
-              <i data-lucide="award"></i> รอบ 3 คนสุดท้าย (Final Q&A)
-            </button>
-            <button class="preset-btn" data-preset="pageant_keyword">
-              <i data-lucide="message-square"></i> Keyword Speech 30 วินาที
-            </button>
-            <button class="preset-btn" data-preset="thai_culture">
-              <i data-lucide="heart"></i> อัตลักษณ์ไทย & เสน่ห์ล้านนา ๒๕๖๙
-            </button>
-            <button class="preset-btn" data-preset="social_empowerment">
-              <i data-lucide="users"></i> ทัศนคติ & สังคมยุคใหม่
-            </button>
-          </div>
-        </div>
-
         <!-- Add Question Form -->
         <div class="admin-card">
           <div class="card-header">
@@ -297,7 +276,7 @@
                 </tr>
               </thead>
               <tbody id="admin-table-body">
-                <!-- Dynamically generated -->
+                <!-- Dynamically generated from Supabase -->
               </tbody>
             </table>
           </div>
