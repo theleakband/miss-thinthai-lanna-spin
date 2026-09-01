@@ -183,6 +183,16 @@ class PageantStageController {
   }
 
   switchView(viewName) {
+    if (viewName === 'admin') {
+      const passcode = prompt('🔒 กรุณากรอกรหัสความปลอดภัย 6 หลักเพื่อเข้าสู่ Admin Panel:');
+      if (passcode !== '999999') {
+        if (passcode !== null) {
+          alert('❌ รหัสผ่านไม่ถูกต้อง! ไม่อนุญาตให้เข้าถึง');
+        }
+        return;
+      }
+    }
+
     this.currentView = viewName;
     if (viewName === 'stage') {
       document.body.classList.remove('admin-view-active');
