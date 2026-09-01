@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เสน่ห์ล้านนา ๒๕๖๙ | ระบบสุ่มคำถามเวทีประกวดนางสาวถิ่นไทยงาม</title>
+  <!-- Google Fonts: Charmonman & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Charmonman:wght@400;700&family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="stage-view-active">
+  <!-- Background Canvas for Gold Dust Particles & Fireworks -->
+  <canvas id="stage-particles"></canvas>
+  <canvas id="fireworks-canvas"></canvas>
+
+  <!-- Ambient Stage Lighting Beams -->
+  <div class="ambient-glow glow-top"></div>
+  <div class="ambient-glow glow-bottom"></div>
+  <div class="ambient-beam beam-left"></div>
+  <div class="ambient-beam beam-right"></div>
+
+  <!-- =========================================================================
+       1. PRODUCTION / STAGE VIEW (FOR LED SCREEN)
+       Clean, Ultra-Luxury, 100% Immersive Fullscreen with Transparent Sponsor Banner
+       ========================================================================= -->
+  <div id="stage-screen" class="stage-screen-view">
+    
+    <!-- Top Stage Header: Dicut Logo + Spaced Theme Headline "เสน่ห์ล้านนา ๒๕๖๙" -->
+    <header class="stage-header">
+      <div class="logo-hero-container">
+        <div class="logo-glow-aura"></div>
+        <img src="logo_dicut.png" alt="นางสาวถิ่นไทยงาม Logo" class="stage-logo-dicut">
+      </div>
+
+      <!-- Spaced Grand Headline with Thai Numerals ๒๕๖๙ -->
+      <div class="official-title-block">
+        <h1 class="sub-pageant-theme">เสน่ห์ล้านนา ๒๕๖๙</h1>
+      </div>
+    </header>
+
+    <!-- Grand Stage Card for Keyword / Question Selection -->
+    <section class="stage-card-wrapper" id="stage-card-wrapper">
+      <div class="stage-card-frame" id="card-outer">
+        <!-- Ornate Gold Corner Filigrees -->
+        <div class="corner-filigree corner-tl"></div>
+        <div class="corner-filigree corner-tr"></div>
+        <div class="corner-filigree corner-bl"></div>
+        <div class="corner-filigree corner-br"></div>
+        
+        <div class="card-glass-body" id="stage-card">
+          <!-- Rapid Overlay Text Display Area -->
+          <div class="stage-display-arena">
+            <div class="overlay-speed-layer" id="layer-blur-back"></div>
+            <div class="overlay-speed-layer" id="layer-blur-mid"></div>
+            
+            <div class="winner-target-container">
+              <div id="main-display-text" class="stage-text-headline">
+                กด Spacebar เพื่อเริ่มสุ่มคำถาม
+              </div>
+              <div id="sub-display-text" class="stage-text-subline">
+                ระบบพร้อมสำหรับการสุ่มคำถามหรือ Keyword ผู้เข้าประกวด
+              </div>
+            </div>
+          </div>
+
+          <!-- Tension Progress Indicator -->
+          <div class="stage-tension-track">
+            <div class="tension-fill-bar" id="tension-progress"></div>
+          </div>
+
+          <!-- Gold Winner Burst Flash -->
+          <div class="winner-burst-overlay" id="winner-burst"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage Floating Action Controls (Visible in Normal Mode) -->
+    <div class="stage-floating-nav" id="stage-controls">
+      <button id="btn-quick-spin" class="stage-spin-button">
+        <span class="spin-btn-aura"></span>
+        <span class="sparkle-sym">✦</span>
+        <span id="btn-spin-text">เริ่มสุ่ม (START)</span>
+        <span class="sparkle-sym">✦</span>
+      </button>
+
+      <button id="btn-switch-to-admin" class="btn-admin-switch" title="เปิดหน้าจอควบคุมสำหรับ Admin (Settings / Manage)">
+        <i data-lucide="sliders-horizontal"></i>
+        <span>Admin Panel</span>
+      </button>
+      
+      <button id="btn-stage-fullscreen" class="btn-stage-icon" title="เปิดเต็มจอ (Fullscreen LED Mode)">
+        <i data-lucide="maximize"></i>
+      </button>
+
+      <button id="btn-stage-sound" class="btn-stage-icon active" title="เปิด/ปิดเสียงเอฟเฟกต์">
+        <i data-lucide="volume-2" id="stage-sound-icon"></i>
+      </button>
+    </div>
+
+    <!-- Official Transparent Sponsor Banner Section -->
+    <footer class="stage-sponsor-footer" id="stage-sponsor-footer">
+      <div class="sponsor-banner-card">
+        <img src="sponsor_banner.png" alt="Official Sponsors Transparent" class="sponsor-banner-img">
+      </div>
+    </footer>
+
+  </div>
+
+
+  <!-- =========================================================================
+       2. ADMIN CONTROL PANEL / BACKSTAGE DASHBOARD (VIEW 2)
+       Full configuration, mode toggles, question bank, live preview & monitor
+       ========================================================================= -->
+  <div id="admin-panel" class="admin-panel-view">
+    <div class="admin-topbar">
+      <div class="admin-brand">
+        <img src="logo_dicut.png" alt="Logo" class="admin-mini-logo">
+        <div>
+          <h3>ระบบควบคุมหลังเวที (Admin Console)</h3>
+          <p>นางสาวถิ่นไทยงาม • เสน่ห์ล้านนา ๒๕๖๙</p>
+        </div>
+      </div>
+
+      <div class="admin-top-actions">
+        <button id="btn-switch-to-stage" class="btn-live-stage">
+          <i data-lucide="monitor-play"></i>
+          <span>สลับไปยังหน้าจอเวที (Go to Stage LED View)</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <!-- Left Column: Controls & Live Monitor -->
+      <div class="admin-col left-col">
+        <!-- Live Action Box -->
+        <div class="admin-card highlight-card">
+          <div class="card-header">
+            <h4><i data-lucide="play-circle"></i> ควบคุมการสุ่ม (Live Trigger)</h4>
+            <span class="live-tag">READY</span>
+          </div>
+          
+          <div class="live-action-buttons">
+            <button id="btn-admin-spin" class="btn-admin-primary">
+              <i data-lucide="sparkles"></i> สั่งสุ่มคำถามทันที (SPIN)
+            </button>
+            <button id="btn-admin-reset-pool" class="btn-admin-secondary">
+              <i data-lucide="rotate-ccw"></i> รีเซ็ตคำถามที่ใช้ไปแล้ว
+            </button>
+          </div>
+
+          <!-- Mode Selection -->
+          <div class="setting-row mt-4">
+            <div class="setting-info">
+              <strong>รูปแบบการสุ่ม (Random Rule)</strong>
+              <small>เลือกเมื่อต้องการไม่ให้คำถามที่ออกแล้วซ้ำอีก</small>
+            </div>
+            <div class="toggle-wrapper">
+              <label class="switch">
+                <input type="checkbox" id="admin-no-repeat-toggle" checked>
+                <span class="slider round"></span>
+              </label>
+              <span id="admin-mode-label" class="mode-status-text">ห้ามใช้ซ้ำ (Unique)</span>
+            </div>
+          </div>
+
+          <!-- Animation Duration -->
+          <div class="setting-row mt-3">
+            <div class="setting-info">
+              <strong>ระยะเวลาการสุ่ม (วินาที)</strong>
+              <small>เวลาในการหมุน Overlay ชะลอความเร็ว</small>
+            </div>
+            <div class="duration-control">
+              <input type="range" id="spin-duration-slider" min="2" max="8" step="0.5" value="4">
+              <span id="duration-val-display" class="gold-badge">4.0s</span>
+            </div>
+          </div>
+
+          <!-- Fullscreen Prompt Info -->
+          <div class="fullscreen-tip-box mt-3">
+            <i data-lucide="info"></i>
+            <span><strong>โหมดจอเวที LED (Fullscreen):</strong> เมื่อกดขยายเต็มจอ เมนูปุ่มทั้งหมดจะถูกแทนที่ด้วย Transparent Sponsor Banner อย่างคมชัดสวยงาม กด <code>Spacebar</code> เพื่อสุ่มคำถาม และกด <code>Esc</code> เพื่อออก</span>
+          </div>
+        </div>
+
+        <!-- Pool Statistics -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h4><i data-lucide="bar-chart-3"></i> สถานะคำถามในระบบ</h4>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="num gold" id="stat-remaining">0</span>
+              <span class="label">พร้อมสุ่ม</span>
+            </div>
+            <div class="stat-box">
+              <span class="num silver" id="stat-used">0</span>
+              <span class="label">ใช้ไปแล้ว</span>
+            </div>
+            <div class="stat-box">
+              <span class="num" id="stat-total">0</span>
+              <span class="label">ทั้งหมด</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Log -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h4><i data-lucide="history"></i> ลำดับที่สุ่มออกไปแล้วในรอบนี้</h4>
+            <button id="btn-admin-clear-history" class="btn-text-only">ล้างประวัติ</button>
+          </div>
+          <div class="admin-history-list" id="admin-history-list">
+            <div class="empty-text">ยังไม่มีประวัติการสุ่ม</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Question Bank & Presets -->
+      <div class="admin-col right-col">
+        <!-- Preset Loader -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h4><i data-lucide="folder-down"></i> ชุดคำถามสำเร็จรูป (Presets)</h4>
+          </div>
+          <div class="preset-badges">
+            <button class="preset-btn" data-preset="pageant_final">
+              <i data-lucide="award"></i> รอบ 3 คนสุดท้าย (Final Q&A)
+            </button>
+            <button class="preset-btn" data-preset="pageant_keyword">
+              <i data-lucide="message-square"></i> Keyword Speech 30 วินาที
+            </button>
+            <button class="preset-btn" data-preset="thai_culture">
+              <i data-lucide="heart"></i> อัตลักษณ์ไทย & เสน่ห์ล้านนา ๒๕๖๙
+            </button>
+            <button class="preset-btn" data-preset="social_empowerment">
+              <i data-lucide="users"></i> ทัศนคติ & สังคมยุคใหม่
+            </button>
+          </div>
+        </div>
+
+        <!-- Add Question Form -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h4><i data-lucide="plus-circle"></i> เพิ่มหัวข้อ / คำถามใหม่</h4>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group">
+              <label>หัวข้อ / Keyword (สั้น กระชับ ตัวใหญ่)*</label>
+              <input type="text" id="admin-new-title" placeholder="เช่น 'สตรีทรงพลัง' หรือ 'เสน่ห์ล้านนา ๒๕๖๙'">
+            </div>
+            <div class="form-group">
+              <label>หมวดหมู่ / รอบการประกวด</label>
+              <input type="text" id="admin-new-category" placeholder="เช่น รอบ 5 คนสุดท้าย / Keyword Speech">
+            </div>
+            <div class="form-group full-width">
+              <label>เนื้อหาคำถามฉบับเต็ม (ถ้ามี)</label>
+              <textarea id="admin-new-desc" rows="2" placeholder="ใส่โจทย์หรือคำถามที่ต้องการให้พิธีกรและนางงามอ่าน..."></textarea>
+            </div>
+            <div class="form-group full-width">
+              <button id="btn-admin-add-item" class="btn-admin-submit">
+                <i data-lucide="plus"></i> บันทึกเพิ่มลงในคลัง
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question List Table -->
+        <div class="admin-card">
+          <div class="card-header">
+            <h4><i data-lucide="database"></i> รายการคำถามทั้งหมด (<span id="table-total-count">0</span>)</h4>
+            <div class="table-actions">
+              <button id="btn-admin-export" class="btn-sm"><i data-lucide="download"></i> ส่งออก JSON</button>
+              <label class="btn-sm cursor-pointer">
+                <i data-lucide="upload"></i> นำเข้า JSON
+                <input type="file" id="admin-import-file" accept=".json" style="display:none;">
+              </label>
+              <button id="btn-admin-clear-all" class="btn-sm danger"><i data-lucide="trash-2"></i> ลบทั้งหมด</button>
+            </div>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th width="8%">#</th>
+                  <th width="22%">หมวดหมู่</th>
+                  <th width="35%">Keyword / หัวข้อ</th>
+                  <th width="20%">คำถามเต็ม</th>
+                  <th width="15%">สถานะ</th>
+                  <th width="10%">ลบ</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body">
+                <!-- Dynamically generated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound, Particle & Main Controller Scripts -->
+  <script src="sound.js"></script>
+  <script src="particles.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
