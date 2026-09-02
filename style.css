@@ -148,16 +148,26 @@ body.admin-view-active #admin-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  padding: 1.5rem 2.5rem;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem 2.5rem;
 }
 
-/* Top-Left Corner Pageant Emblem Logo */
-.logo-hero-container {
+/* Top-Left Corner Pageant Brand Lockup (Logo + Small Theme Title) */
+.stage-brand-corner {
   position: absolute;
-  top: 1.5rem;
+  top: 1.4rem;
   left: 2.5rem;
   z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  pointer-events: none;
+}
+
+.logo-hero-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -165,8 +175,8 @@ body.admin-view-active #admin-panel {
 
 .logo-glow-aura {
   position: absolute;
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(230, 202, 101, 0.45) 0%, transparent 70%);
   filter: blur(25px);
@@ -179,13 +189,13 @@ body.admin-view-active #admin-panel {
 }
 
 .stage-logo-dicut {
-  height: clamp(85px, 8vw, 120px);
+  height: clamp(70px, 6.5vw, 95px);
   width: auto;
-  max-width: 300px;
+  max-width: 260px;
   object-fit: contain;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 0 25px rgba(255, 235, 150, 0.75)) drop-shadow(0 10px 25px rgba(0,0,0,0.95));
+  filter: drop-shadow(0 0 20px rgba(255, 235, 150, 0.75)) drop-shadow(0 8px 20px rgba(0,0,0,0.95));
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -193,32 +203,18 @@ body.admin-view-active #admin-panel {
   transform: scale(1.05);
 }
 
-/* Grand Center Header "เสน่ห์ล้านนา ๒๕๖๙" Headline */
-.stage-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 0.2rem;
-  margin-bottom: 0.5rem;
-  width: 100%;
-}
-
-.official-title-block {
-  text-align: center;
-  margin-top: 0.2rem;
-}
-
 .sub-pageant-theme {
   font-family: var(--font-thai-hero);
-  font-size: clamp(3.4rem, 4.8vw, 4.4rem);
+  font-size: clamp(1.15rem, 1.35vw, 1.45rem);
   font-weight: 700;
-  letter-spacing: 3px;
+  letter-spacing: 2.5px;
   background: var(--gold-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 35px rgba(255, 225, 110, 0.85)) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.9));
+  filter: drop-shadow(0 0 15px rgba(255, 225, 110, 0.6)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
   line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -588,9 +584,9 @@ body.is-fullscreen .stage-screen-view,
   height: 100vh;
 }
 
-body.is-fullscreen .logo-hero-container,
-:fullscreen .logo-hero-container,
-:-webkit-full-screen .logo-hero-container {
+body.is-fullscreen .stage-brand-corner,
+:fullscreen .stage-brand-corner,
+:-webkit-full-screen .stage-brand-corner {
   top: 1.8rem;
   left: 3rem;
 }
@@ -598,19 +594,13 @@ body.is-fullscreen .logo-hero-container,
 body.is-fullscreen .stage-logo-dicut,
 :fullscreen .stage-logo-dicut,
 :-webkit-full-screen .stage-logo-dicut {
-  height: clamp(95px, 8.5vw, 130px);
-}
-
-body.is-fullscreen .official-title-block,
-:fullscreen .official-title-block,
-:-webkit-full-screen .official-title-block {
-  margin-top: 0;
+  height: clamp(80px, 7.5vw, 110px);
 }
 
 body.is-fullscreen .sub-pageant-theme,
 :fullscreen .sub-pageant-theme,
 :-webkit-full-screen .sub-pageant-theme {
-  font-size: clamp(3.8rem, 5vw, 4.8rem);
+  font-size: clamp(1.2rem, 1.4vw, 1.55rem);
 }
 
 body.is-fullscreen .stage-card-wrapper,
@@ -1151,18 +1141,18 @@ input:checked + .slider:before {
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .admin-grid { grid-template-columns: 1fr; }
-  .logo-hero-container {
+  .stage-brand-corner {
     top: 1rem;
     left: 1.2rem;
   }
   .stage-logo-dicut {
-    height: 65px;
+    height: 55px;
   }
   .logo-glow-aura {
-    width: 90px;
-    height: 90px;
+    width: 80px;
+    height: 80px;
   }
-  .sub-pageant-theme { font-size: 2.4rem; }
+  .sub-pageant-theme { font-size: 1.05rem; letter-spacing: 1.5px; }
   .stage-text-headline { font-size: clamp(2.4rem, 4.8vw, 3.5rem); }
   .stage-text-headline.winner-text { font-size: clamp(2.6rem, 5.2vw, 3.8rem); }
   .stage-text-subline { font-size: clamp(1.4rem, 2.4vw, 1.7rem); }
