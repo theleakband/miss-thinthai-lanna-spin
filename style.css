@@ -148,34 +148,28 @@ body.admin-view-active #admin-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 2.5rem 0.6rem 2.5rem;
+  justify-content: space-around;
+  padding: 1.5rem 2.5rem;
 }
 
-/* Header with Dicut Logo & Spaced "เสน่ห์ล้านนา ๒๕๖๙" Headline */
-.stage-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 0.4rem;
-}
-
+/* Top-Left Corner Pageant Emblem Logo */
 .logo-hero-container {
-  position: relative;
-  margin-bottom: 0.3rem;
+  position: absolute;
+  top: 1.5rem;
+  left: 2.5rem;
+  z-index: 15;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .logo-glow-aura {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(230, 202, 101, 0.45) 0%, transparent 70%);
-  filter: blur(35px);
+  filter: blur(25px);
   animation: logoAuraPulse 3.5s infinite alternate ease-in-out;
 }
 
@@ -185,29 +179,39 @@ body.admin-view-active #admin-panel {
 }
 
 .stage-logo-dicut {
-  height: 165px;
+  height: clamp(85px, 8vw, 120px);
   width: auto;
-  max-width: 480px;
+  max-width: 300px;
   object-fit: contain;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 0 30px rgba(255, 235, 150, 0.8)) drop-shadow(0 15px 35px rgba(0,0,0,0.95));
+  filter: drop-shadow(0 0 25px rgba(255, 235, 150, 0.75)) drop-shadow(0 10px 25px rgba(0,0,0,0.95));
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .stage-logo-dicut:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
-/* Grand Headline "เสน่ห์ล้านนา ๒๕๖๙" with Spacing */
+/* Grand Center Header "เสน่ห์ล้านนา ๒๕๖๙" Headline */
+.stage-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
 .official-title-block {
   text-align: center;
-  margin-top: 1.2rem; /* Added elegant spacing below the logo */
+  margin-top: 0.2rem;
 }
 
 .sub-pageant-theme {
   font-family: var(--font-thai-hero);
-  font-size: 4.2rem;
+  font-size: clamp(3.4rem, 4.8vw, 4.4rem);
   font-weight: 700;
   letter-spacing: 3px;
   background: var(--gold-gradient);
@@ -564,47 +568,7 @@ body.admin-view-active #admin-panel {
 }
 
 /* ==========================================================================
-   SPONSOR BANNER FOOTER (100% PURE TRANSPARENT & PROMINENT)
-   ========================================================================== */
-.stage-sponsor-footer {
-  width: 100vw;
-  margin-top: 0.2rem;
-  margin-bottom: 0;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  animation: fadeInSponsor 0.5s ease forwards;
-}
-
-.sponsor-banner-card {
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: 0;
-  box-shadow: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.sponsor-banner-img {
-  width: 96vw;
-  max-width: 2500px;
-  height: auto;
-  max-height: 38vh;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 40px rgba(0,0,0,0.98)) drop-shadow(0 0 30px rgba(255,255,255,0.35));
-  transition: transform 0.3s ease;
-}
-
-@keyframes fadeInSponsor {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==========================================================================
-   FULLSCREEN LED MODE OVERRIDES (SHOW SPONSORS, HIDE ACTION BUTTONS)
+   FULLSCREEN LED MODE OVERRIDES (CLEAN LUXURY STAGE IMMERSION)
    ========================================================================== */
 body.is-fullscreen .stage-floating-nav,
 :fullscreen .stage-floating-nav,
@@ -615,25 +579,45 @@ body.is-fullscreen .stage-floating-nav,
   pointer-events: none !important;
 }
 
-body.is-fullscreen .stage-sponsor-footer,
-:fullscreen .stage-sponsor-footer,
-:-webkit-full-screen .stage-sponsor-footer {
-  display: flex !important;
-}
-
 body.is-fullscreen .stage-screen-view,
 :fullscreen .stage-screen-view,
 :-webkit-full-screen .stage-screen-view {
-  padding: 0.8rem 2.5rem 0.4rem 2.5rem;
-  justify-content: space-between;
+  padding: 2rem 3rem;
+  justify-content: center;
+  gap: 2.2rem;
   height: 100vh;
+}
+
+body.is-fullscreen .logo-hero-container,
+:fullscreen .logo-hero-container,
+:-webkit-full-screen .logo-hero-container {
+  top: 1.8rem;
+  left: 3rem;
+}
+
+body.is-fullscreen .stage-logo-dicut,
+:fullscreen .stage-logo-dicut,
+:-webkit-full-screen .stage-logo-dicut {
+  height: clamp(95px, 8.5vw, 130px);
+}
+
+body.is-fullscreen .official-title-block,
+:fullscreen .official-title-block,
+:-webkit-full-screen .official-title-block {
+  margin-top: 0;
+}
+
+body.is-fullscreen .sub-pageant-theme,
+:fullscreen .sub-pageant-theme,
+:-webkit-full-screen .sub-pageant-theme {
+  font-size: clamp(3.8rem, 5vw, 4.8rem);
 }
 
 body.is-fullscreen .stage-card-wrapper,
 :fullscreen .stage-card-wrapper,
 :-webkit-full-screen .stage-card-wrapper {
   max-width: 1450px;
-  margin: 0.05rem 0;
+  margin: 0;
 }
 
 body.is-fullscreen .stage-card-frame,
@@ -647,24 +631,6 @@ body.is-fullscreen .card-glass-body,
 :-webkit-full-screen .card-glass-body {
   min-height: 318px;
   padding: 1.8rem 2.5rem;
-}
-
-body.is-fullscreen .stage-logo-dicut,
-:fullscreen .stage-logo-dicut,
-:-webkit-full-screen .stage-logo-dicut {
-  height: 160px;
-}
-
-body.is-fullscreen .official-title-block,
-:fullscreen .official-title-block,
-:-webkit-full-screen .official-title-block {
-  margin-top: 1.2rem;
-}
-
-body.is-fullscreen .sub-pageant-theme,
-:fullscreen .sub-pageant-theme,
-:-webkit-full-screen .sub-pageant-theme {
-  font-size: 4.4rem;
 }
 
 
@@ -1185,10 +1151,20 @@ input:checked + .slider:before {
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .admin-grid { grid-template-columns: 1fr; }
-  .sub-pageant-theme { font-size: 2.5rem; }
+  .logo-hero-container {
+    top: 1rem;
+    left: 1.2rem;
+  }
+  .stage-logo-dicut {
+    height: 65px;
+  }
+  .logo-glow-aura {
+    width: 90px;
+    height: 90px;
+  }
+  .sub-pageant-theme { font-size: 2.4rem; }
   .stage-text-headline { font-size: clamp(2.4rem, 4.8vw, 3.5rem); }
   .stage-text-headline.winner-text { font-size: clamp(2.6rem, 5.2vw, 3.8rem); }
   .stage-text-subline { font-size: clamp(1.4rem, 2.4vw, 1.7rem); }
   .stage-text-subline.winner-sub { font-size: clamp(1.5rem, 2.6vw, 1.9rem); }
-  .sponsor-banner-img { max-height: 25vh; }
 }
