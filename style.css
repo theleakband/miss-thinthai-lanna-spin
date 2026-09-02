@@ -407,6 +407,14 @@ body.admin-view-active #admin-panel {
   transition: all 0.3s ease;
 }
 
+.stage-text-subline:empty {
+  display: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
 .stage-text-subline.winner-sub {
   color: #f5f7fc;
   font-size: clamp(2.1rem, 3.3vw, 3.3rem);

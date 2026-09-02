@@ -629,7 +629,7 @@ class PageantStageController {
     this.mainDisplayText.classList.remove('winner-text');
     this.mainDisplayText.classList.add('spinning');
     this.subDisplayText.classList.remove('winner-sub');
-    this.subDisplayText.innerText = 'ระบบกำลังทำการสุ่มหัวข้อคำถาม...';
+    this.subDisplayText.innerText = '';
     this.tensionProgress.style.width = '0%';
 
     // Play Sound Riser
