@@ -173,11 +173,11 @@ body.admin-view-active #admin-panel {
 
 .logo-glow-aura {
   position: absolute;
-  width: 140px;
-  height: 140px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(230, 202, 101, 0.45) 0%, transparent 70%);
-  filter: blur(25px);
+  filter: blur(30px);
   animation: logoAuraPulse 3.5s infinite alternate ease-in-out;
 }
 
@@ -187,13 +187,13 @@ body.admin-view-active #admin-panel {
 }
 
 .stage-logo-dicut {
-  height: clamp(70px, 6.5vw, 95px);
+  height: clamp(105px, 9.5vw, 145px);
   width: auto;
-  max-width: 260px;
+  max-width: 380px;
   object-fit: contain;
   position: relative;
   z-index: 2;
-  filter: drop-shadow(0 0 20px rgba(255, 235, 150, 0.75)) drop-shadow(0 8px 20px rgba(0,0,0,0.95));
+  filter: drop-shadow(0 0 25px rgba(255, 235, 150, 0.8)) drop-shadow(0 10px 25px rgba(0,0,0,0.95));
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -203,13 +203,13 @@ body.admin-view-active #admin-panel {
 
 .sub-pageant-theme {
   font-family: var(--font-thai-hero);
-  font-size: clamp(1.15rem, 1.35vw, 1.45rem);
+  font-size: clamp(1.75rem, 2vw, 2.2rem);
   font-weight: 700;
-  letter-spacing: 2.5px;
+  letter-spacing: 3px;
   background: var(--gold-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 15px rgba(255, 225, 110, 0.6)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+  filter: drop-shadow(0 0 18px rgba(255, 225, 110, 0.65)) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.9));
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
@@ -221,8 +221,8 @@ body.admin-view-active #admin-panel {
 .stage-card-wrapper {
   width: 100%;
   max-width: 1350px;
-  margin-top: clamp(2.5rem, 5.5vh, 4.5rem);
-  margin-bottom: 1.5rem;
+  margin-top: clamp(2rem, 4vh, 3.2rem);
+  margin-bottom: 1.2rem;
   display: flex;
   justify-content: center;
 }
@@ -591,20 +591,20 @@ body.is-fullscreen .stage-brand-header,
 body.is-fullscreen .stage-logo-dicut,
 :fullscreen .stage-logo-dicut,
 :-webkit-full-screen .stage-logo-dicut {
-  height: clamp(80px, 7.5vw, 105px);
+  height: clamp(115px, 10vw, 155px);
 }
 
 body.is-fullscreen .sub-pageant-theme,
 :fullscreen .sub-pageant-theme,
 :-webkit-full-screen .sub-pageant-theme {
-  font-size: clamp(1.2rem, 1.4vw, 1.55rem);
+  font-size: clamp(1.85rem, 2.1vw, 2.35rem);
 }
 
 body.is-fullscreen .stage-card-wrapper,
 :fullscreen .stage-card-wrapper,
 :-webkit-full-screen .stage-card-wrapper {
   max-width: 1450px;
-  margin-top: clamp(3.5rem, 7.5vh, 6rem);
+  margin-top: clamp(2.2rem, 5vh, 4rem);
   margin-bottom: 0;
 }
 
@@ -1143,13 +1143,13 @@ input:checked + .slider:before {
     margin-top: 0.3rem;
   }
   .stage-logo-dicut {
-    height: 55px;
-  }
-  .logo-glow-aura {
-    width: 80px;
     height: 80px;
   }
-  .sub-pageant-theme { font-size: 1.05rem; letter-spacing: 1.5px; }
+  .logo-glow-aura {
+    width: 120px;
+    height: 120px;
+  }
+  .sub-pageant-theme { font-size: 1.55rem; letter-spacing: 2px; }
   .stage-card-wrapper {
     margin-top: 1.8rem;
   }
