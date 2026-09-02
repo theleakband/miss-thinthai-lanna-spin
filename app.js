@@ -58,6 +58,8 @@ class PageantStageController {
     this.isNoRepeat = true;
     this.isSpinning = false;
     this.spinDurationSec = 4.0;
+    this.showQuestionDesc = true; // op1: true (show text), op2: false (hide text)
+    this.currentWinner = null;
     this.currentView = 'stage'; // 'stage' or 'admin'
 
     // DOM Elements - Stage View
@@ -86,6 +88,8 @@ class PageantStageController {
     this.btnAdminResetPool = document.getElementById('btn-admin-reset-pool');
     this.adminNoRepeatToggle = document.getElementById('admin-no-repeat-toggle');
     this.adminModeLabel = document.getElementById('admin-mode-label');
+    this.btnOptShowDesc = document.getElementById('btn-opt-show-desc');
+    this.btnOptHideDesc = document.getElementById('btn-opt-hide-desc');
     this.spinDurationSlider = document.getElementById('spin-duration-slider');
     this.durationValDisplay = document.getElementById('duration-val-display');
 
@@ -128,9 +132,21 @@ class PageantStageController {
     this.channel
       .on('broadcast', { event: 'spin_trigger' }, (payload) => {
         if (!this.isSpinning) {
-          const { winner, duration } = payload.payload;
+          const { winner, duration, showQuestionDesc } = payload.payload;
           if (duration) this.spinDurationSec = duration;
+          if (typeof showQuestionDesc !== 'undefined') {
+            this.showQuestionDesc = showQuestionDesc;
+            this.updateDescModeDisplay();
+          }
           this.executeSpinAnimation(winner, false);
+        }
+      })
+      .on('broadcast', { event: 'setting_change' }, (payload) => {
+        const { showQuestionDesc } = payload.payload;
+        if (typeof showQuestionDesc !== 'undefined') {
+          this.showQuestionDesc = showQuestionDesc;
+          this.updateDescModeDisplay();
+          this.updateDescVisibility();
         }
       })
       .subscribe((status) => {
@@ -165,6 +181,14 @@ class PageantStageController {
       this.spinDurationSlider.value = this.spinDurationSec;
       this.durationValDisplay.innerText = `${this.spinDurationSec.toFixed(1)}s`;
     }
+
+    const savedShowDesc = localStorage.getItem('thin_thai_show_desc');
+    if (savedShowDesc !== null) {
+      this.showQuestionDesc = savedShowDesc === 'true';
+    } else {
+      this.showQuestionDesc = true;
+    }
+    this.updateDescModeDisplay();
 
     await this.fetchFromSupabase();
   }
@@ -243,6 +267,7 @@ class PageantStageController {
   saveSettings() {
     localStorage.setItem('thin_thai_no_repeat', this.isNoRepeat.toString());
     localStorage.setItem('thin_thai_duration', this.spinDurationSec.toString());
+    localStorage.setItem('thin_thai_show_desc', this.showQuestionDesc.toString());
   }
 
   switchView(viewName) {
@@ -321,6 +346,16 @@ class PageantStageController {
       this.saveSettings();
       this.updateStats();
     });
+
+    // Question Text Display Options (Op1: Show / Op2: Hide)
+    if (this.btnOptShowDesc && this.btnOptHideDesc) {
+      this.btnOptShowDesc.addEventListener('click', () => {
+        this.setShowQuestionDesc(true);
+      });
+      this.btnOptHideDesc.addEventListener('click', () => {
+        this.setShowQuestionDesc(false);
+      });
+    }
 
     // Duration Slider
     this.spinDurationSlider.addEventListener('input', (e) => {
@@ -514,6 +549,47 @@ class PageantStageController {
     }
   }
 
+  setShowQuestionDesc(show, broadcast = true) {
+    this.showQuestionDesc = show;
+    this.updateDescModeDisplay();
+    this.saveSettings();
+    this.updateDescVisibility();
+
+    if (broadcast && this.channel) {
+      this.channel.send({
+        type: 'broadcast',
+        event: 'setting_change',
+        payload: {
+          showQuestionDesc: this.showQuestionDesc
+        }
+      });
+    }
+  }
+
+  updateDescModeDisplay() {
+    if (this.btnOptShowDesc && this.btnOptHideDesc) {
+      if (this.showQuestionDesc) {
+        this.btnOptShowDesc.classList.add('active');
+        this.btnOptHideDesc.classList.remove('active');
+      } else {
+        this.btnOptShowDesc.classList.remove('active');
+        this.btnOptHideDesc.classList.add('active');
+      }
+    }
+  }
+
+  updateDescVisibility() {
+    if (this.currentWinner) {
+      if (this.showQuestionDesc && this.currentWinner.desc) {
+        this.subDisplayText.innerText = this.currentWinner.desc;
+        this.subDisplayText.classList.add('winner-sub');
+      } else {
+        this.subDisplayText.innerText = '';
+        this.subDisplayText.classList.remove('winner-sub');
+      }
+    }
+  }
+
   updateStats() {
     const total = this.items.length;
     const used = this.items.filter(i => i.used).length;
@@ -610,7 +686,8 @@ class PageantStageController {
         event: 'spin_trigger',
         payload: {
           winner: winner,
-          duration: this.spinDurationSec
+          duration: this.spinDurationSec,
+          showQuestionDesc: this.showQuestionDesc
         }
       });
     }
@@ -697,6 +774,8 @@ class PageantStageController {
     this.renderAdminHistory();
     this.updateStats();
 
+    this.currentWinner = winner;
+
     // Clear Overlay Blur
     this.layerBlurMid.style.opacity = '0';
     this.layerBlurBack.style.opacity = '0';
@@ -708,11 +787,12 @@ class PageantStageController {
     this.mainDisplayText.classList.add('winner-text');
     this.mainDisplayText.innerText = winner.title;
 
-    if (winner.desc) {
+    if (this.showQuestionDesc && winner.desc) {
       this.subDisplayText.innerText = winner.desc;
       this.subDisplayText.classList.add('winner-sub');
     } else {
       this.subDisplayText.innerText = '';
+      this.subDisplayText.classList.remove('winner-sub');
     }
 
     // Flash burst & Fireworks
