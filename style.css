@@ -148,22 +148,20 @@ body.admin-view-active #admin-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  padding: 2rem 2.5rem;
+  justify-content: flex-start;
+  padding: 1.8rem 2.5rem 2.2rem 2.5rem;
 }
 
-/* Top-Left Corner Pageant Brand Lockup (Logo + Small Theme Title) */
-.stage-brand-corner {
-  position: absolute;
-  top: 1.4rem;
-  left: 2.5rem;
-  z-index: 15;
+/* Centered Pageant Brand Header (Logo + Small Theme Title) */
+.stage-brand-header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
-  pointer-events: none;
+  margin-top: 0.5rem;
+  z-index: 10;
+  text-align: center;
 }
 
 .logo-hero-container {
@@ -223,7 +221,8 @@ body.admin-view-active #admin-panel {
 .stage-card-wrapper {
   width: 100%;
   max-width: 1350px;
-  margin: 0.1rem 0;
+  margin-top: clamp(2.5rem, 5.5vh, 4.5rem);
+  margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
 }
@@ -578,23 +577,21 @@ body.is-fullscreen .stage-floating-nav,
 body.is-fullscreen .stage-screen-view,
 :fullscreen .stage-screen-view,
 :-webkit-full-screen .stage-screen-view {
-  padding: 2rem 3rem;
-  justify-content: center;
-  gap: 2.2rem;
+  padding: 2.5rem 3rem;
+  justify-content: flex-start;
   height: 100vh;
 }
 
-body.is-fullscreen .stage-brand-corner,
-:fullscreen .stage-brand-corner,
-:-webkit-full-screen .stage-brand-corner {
-  top: 1.8rem;
-  left: 3rem;
+body.is-fullscreen .stage-brand-header,
+:fullscreen .stage-brand-header,
+:-webkit-full-screen .stage-brand-header {
+  margin-top: 1rem;
 }
 
 body.is-fullscreen .stage-logo-dicut,
 :fullscreen .stage-logo-dicut,
 :-webkit-full-screen .stage-logo-dicut {
-  height: clamp(80px, 7.5vw, 110px);
+  height: clamp(80px, 7.5vw, 105px);
 }
 
 body.is-fullscreen .sub-pageant-theme,
@@ -607,7 +604,8 @@ body.is-fullscreen .stage-card-wrapper,
 :fullscreen .stage-card-wrapper,
 :-webkit-full-screen .stage-card-wrapper {
   max-width: 1450px;
-  margin: 0;
+  margin-top: clamp(3.5rem, 7.5vh, 6rem);
+  margin-bottom: 0;
 }
 
 body.is-fullscreen .stage-card-frame,
@@ -1141,9 +1139,8 @@ input:checked + .slider:before {
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .admin-grid { grid-template-columns: 1fr; }
-  .stage-brand-corner {
-    top: 1rem;
-    left: 1.2rem;
+  .stage-brand-header {
+    margin-top: 0.3rem;
   }
   .stage-logo-dicut {
     height: 55px;
@@ -1153,6 +1150,9 @@ input:checked + .slider:before {
     height: 80px;
   }
   .sub-pageant-theme { font-size: 1.05rem; letter-spacing: 1.5px; }
+  .stage-card-wrapper {
+    margin-top: 1.8rem;
+  }
   .stage-text-headline { font-size: clamp(2.4rem, 4.8vw, 3.5rem); }
   .stage-text-headline.winner-text { font-size: clamp(2.6rem, 5.2vw, 3.8rem); }
   .stage-text-subline { font-size: clamp(1.4rem, 2.4vw, 1.7rem); }
